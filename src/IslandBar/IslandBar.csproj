@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- 19041 = Windows 10 2004 SDK. It gives us the media and battery APIs. Runs on Windows 10 2004+ and 11. -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>   <!-- only used for the tray icon and screen list -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>   <!-- WPF and WinForms share type names, so we write usings by hand -->
+    <RootNamespace>IslandBar</RootNamespace>
+    <AssemblyName>IslandBar</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>   <!-- DPI is set in app.manifest, which is correct for WPF -->
+    <PlatformTarget>x64</PlatformTarget>   <!-- the Win32 calls use 64-bit entry points -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <!-- The shared logic is compiled straight into IslandBar.dll (no separate IslandBar.Core.dll),
+         because Windows Smart App Control blocks extra unsigned DLLs. -->
+    <Compile Include="..\IslandBar.Core\*.cs" Link="Core\%(Filename)%(Extension)" />
+    <Using Include="System" />
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+</Project>

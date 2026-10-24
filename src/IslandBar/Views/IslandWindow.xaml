@@ -1,0 +1,173 @@
+<Window x:Class="IslandBar.Views.IslandWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:IslandBar.Views"
+        Title="IslandBar" Width="200" Height="80"
+        WindowStyle="None" AllowsTransparency="True" Background="{x:Null}"
+        ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False"
+        Topmost="True" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display"
+        FontFamily="{StaticResource UiFont}" Foreground="{StaticResource TextBrush}"
+        SnapsToDevicePixels="True">
+    <!-- The window is see-through. Only the black "Island" border is drawn.
+         The window is kept just a little bigger than the island so it does not block clicks around it. -->
+    <Grid x:Name="Root" Background="{x:Null}">
+        <Border x:Name="Island" Width="150" Height="36" Margin="12"
+                HorizontalAlignment="Center" VerticalAlignment="Top"
+                Background="{StaticResource IslandBrush}" CornerRadius="18"
+                BorderBrush="#26FFFFFF" BorderThickness="1" SnapsToDevicePixels="False">
+            <Border.Effect>
+                <DropShadowEffect x:Name="Shadow" BlurRadius="14" ShadowDepth="3" Direction="270" Opacity="0" Color="Black"/>
+            </Border.Effect>
+            <Grid x:Name="ViewHost">
+
+                <!-- ============ COMPACT (150 x 36) ============ -->
+                <Grid x:Name="CompactView" Width="150" Height="36" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <Border x:Name="CompactArt" Width="22" Height="22" CornerRadius="6" HorizontalAlignment="Left"
+                            Margin="11,0,0,0" Background="{StaticResource SurfaceBrush}">
+                        <Path x:Name="CompactNote" Data="{StaticResource Icon.Note}" Width="14" Height="14" Stretch="Uniform"
+                              Stroke="{StaticResource AccentBrush}" StrokeThickness="1.6" Fill="Transparent"/>
+                    </Border>
+                    <Ellipse x:Name="CompactDot" Width="6" Height="6" Fill="{StaticResource AccentBrush}"
+                             HorizontalAlignment="Right" Margin="0,0,16,0" Opacity="0.9"/>
+                    <v:EqualizerBars x:Name="CompactEq" HorizontalAlignment="Right" Margin="0,0,12,0" Visibility="Collapsed"/>
+                    <TextBlock x:Name="CompactTimerText" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"
+                               FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"
+                               Visibility="Collapsed"/>
+                </Grid>
+
+                <!-- ============ PEEK (hover, 300 x 48) ============ -->
+                <Grid x:Name="PeekView" Width="300" Height="48" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" Opacity="0">
+                    <Border x:Name="PeekArt" Width="32" Height="32" CornerRadius="8" HorizontalAlignment="Left"
+                            Margin="14,0,0,0" Background="{StaticResource SurfaceBrush}">
+                        <Path x:Name="PeekNote" Data="{StaticResource Icon.Note}" Width="18" Height="18" Stretch="Uniform"
+                              Stroke="{StaticResource AccentBrush}" StrokeThickness="1.6" Fill="Transparent"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Margin="56,0,64,0">
+                        <TextBlock x:Name="PeekTitle" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="PeekSubtitle" FontSize="11.5" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <v:EqualizerBars x:Name="PeekEq" HorizontalAlignment="Right" Margin="0,0,18,0" Visibility="Collapsed"/>
+                    <TextBlock x:Name="PeekTimerText" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0"
+                               FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" Visibility="Collapsed"/>
+                </Grid>
+
+                <!-- ============ EXPANDED (392 x 188) ============ -->
+                <Grid x:Name="ExpandedView" Width="392" Height="188" HorizontalAlignment="Center" VerticalAlignment="Top"
+                      Visibility="Collapsed" Opacity="0">
+                    <!-- Top row: tabs on the left, battery on the right -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,12,0,0">
+                        <RadioButton x:Name="TabMedia" Style="{StaticResource TabChip}" GroupName="IslandTabs" IsChecked="True" Content="Media" FontSize="12" FontWeight="SemiBold" AutomationProperties.Name="Media tab"/>
+                        <RadioButton x:Name="TabTimer" Style="{StaticResource TabChip}" GroupName="IslandTabs" Content="Timer" FontSize="12" FontWeight="SemiBold" Margin="4,0,0,0" AutomationProperties.Name="Timer tab"/>
+                    </StackPanel>
+                    <StackPanel x:Name="BatteryChip" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,16,18,0">
+                        <Path x:Name="ChipBolt" Data="{StaticResource Icon.Bolt}" Width="12" Height="12" Stretch="Uniform"
+                              Fill="{StaticResource GreenBrush}" Margin="0,0,5,0" Visibility="Collapsed"/>
+                        <TextBlock x:Name="ChipText" FontSize="12" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,7,0"/>
+                        <v:BatteryIcon x:Name="ChipIcon" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Media page -->
+                    <Grid x:Name="MediaPage" Margin="18,52,18,10">
+                        <Border x:Name="ExpArt" Width="76" Height="76" CornerRadius="14" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                Background="{StaticResource SurfaceBrush}">
+                            <Path x:Name="ExpNote" Data="{StaticResource Icon.Note}" Width="34" Height="34" Stretch="Uniform"
+                                  Stroke="{StaticResource AccentBrush}" StrokeThickness="1.4" Fill="Transparent"/>
+                        </Border>
+                        <StackPanel x:Name="MediaInfoPanel" Margin="90,0,0,0" VerticalAlignment="Top" Height="76">
+                            <TextBlock x:Name="ExpTitle" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock x:Name="ExpArtist" FontSize="13" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" Margin="0,1,0,0"/>
+                            <Grid Margin="0,16,0,0">
+                                <Border Height="4" CornerRadius="2" Background="#3A3A3C" VerticalAlignment="Center"/>
+                                <Border x:Name="ProgressFill" Height="4" CornerRadius="2" Background="{StaticResource TextBrush}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Center" Width="0"/>
+                            </Grid>
+                            <Grid Margin="0,4,0,0">
+                                <TextBlock x:Name="PosText" FontSize="10.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Left"/>
+                                <TextBlock x:Name="DurText" FontSize="10.5" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                            <Button x:Name="PrevButton" Style="{StaticResource IconButton}" AutomationProperties.Name="Previous track">
+                                <Path Data="{StaticResource Icon.Previous}" Width="20" Height="20" Stretch="Uniform" Fill="{StaticResource TextBrush}"/>
+                            </Button>
+                            <Button x:Name="PlayPauseButton" Style="{StaticResource IconButton}" Margin="14,0" Width="44" Height="44" AutomationProperties.Name="Play or pause">
+                                <Path x:Name="PlayPauseIcon" Data="{StaticResource Icon.Play}" Width="26" Height="26" Stretch="Uniform" Fill="{StaticResource TextBrush}"/>
+                            </Button>
+                            <Button x:Name="NextButton" Style="{StaticResource IconButton}" AutomationProperties.Name="Next track">
+                                <Path Data="{StaticResource Icon.Next}" Width="20" Height="20" Stretch="Uniform" Fill="{StaticResource TextBrush}"/>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock x:Name="MediaHint" Text="Nothing playing" FontSize="13" Foreground="{StaticResource MutedBrush}"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,28,0,0" Visibility="Collapsed"/>
+                    </Grid>
+
+                    <!-- Timer page -->
+                    <Grid x:Name="TimerPage" Margin="18,52,18,12" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="56"/><RowDefinition Height="34"/><RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="MinusButton" Style="{StaticResource IconButton}" Width="34" Height="34" AutomationProperties.Name="Less time">
+                                <Path Data="{StaticResource Icon.Minus}" Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource TextBrush}" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            </Button>
+                            <StackPanel Margin="14,0" MinWidth="140">
+                                <TextBlock x:Name="TimerDisplay" FontSize="34" FontWeight="SemiBold" HorizontalAlignment="Center" Text="05:00"/>
+                                <TextBlock x:Name="TimerStatus" FontSize="11" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" Text="Ready"/>
+                            </StackPanel>
+                            <Button x:Name="PlusButton" Style="{StaticResource IconButton}" Width="34" Height="34" AutomationProperties.Name="More time">
+                                <Path Data="{StaticResource Icon.Plus}" Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource TextBrush}" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel x:Name="PresetRow" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Style="{StaticResource PillButton}" Tag="60" Content="1 min" Padding="12,3" Margin="3,0"/>
+                            <Button Style="{StaticResource PillButton}" Tag="300" Content="5 min" Padding="12,3" Margin="3,0"/>
+                            <Button Style="{StaticResource PillButton}" Tag="600" Content="10 min" Padding="12,3" Margin="3,0"/>
+                            <Button Style="{StaticResource PillButton}" Tag="1500" Content="25 min" Padding="12,3" Margin="3,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Button x:Name="StartButton" Style="{StaticResource AccentPillButton}" Content="Start" MinWidth="84"/>
+                            <Button x:Name="PauseResumeButton" Style="{StaticResource AccentPillButton}" Content="Pause" MinWidth="84" Visibility="Collapsed"/>
+                            <Button x:Name="CancelButton" Style="{StaticResource PillButton}" Content="Cancel" MinWidth="84" Margin="8,0,0,0" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <!-- ============ ALERT: VOLUME (260 x 46) ============ -->
+                <Grid x:Name="VolumeAlertView" Width="260" Height="46" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" Opacity="0">
+                    <Grid Width="24" Height="24" HorizontalAlignment="Left" Margin="18,0,0,0">
+                        <Viewbox><Canvas Width="24" Height="24">
+                            <Path Data="{StaticResource Icon.SpeakerBody}" Fill="{StaticResource TextBrush}"/>
+                            <Path x:Name="VolWaves" Data="{StaticResource Icon.SpeakerWaves}" Stroke="{StaticResource TextBrush}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Path x:Name="VolCross" Data="{StaticResource Icon.SpeakerMuteCross}" Stroke="{StaticResource RedBrush}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed"/>
+                        </Canvas></Viewbox>
+                    </Grid>
+                    <Grid Margin="54,0,62,0" VerticalAlignment="Center">
+                        <Border Height="6" CornerRadius="3" Background="#3A3A3C"/>
+                        <Border x:Name="VolFill" Height="6" CornerRadius="3" Background="{StaticResource TextBrush}" HorizontalAlignment="Left" Width="0"/>
+                    </Grid>
+                    <TextBlock x:Name="VolPercent" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,18,0"/>
+                </Grid>
+
+                <!-- ============ ALERT: BATTERY (260 x 46) ============ -->
+                <Grid x:Name="BatteryAlertView" Width="260" Height="46" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" Opacity="0">
+                    <v:BatteryIcon x:Name="AlertBatIcon" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="18,0,0,0"/>
+                    <TextBlock x:Name="AlertBatText" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" Margin="56,0,48,0" TextTrimming="CharacterEllipsis"/>
+                    <Path x:Name="AlertBatBolt" Data="{StaticResource Icon.Bolt}" Width="14" Height="14" Stretch="Uniform"
+                          Fill="{StaticResource GreenBrush}" HorizontalAlignment="Right" Margin="0,0,20,0"/>
+                </Grid>
+
+                <!-- ============ ALERT: TIMER DONE (320 x 64) ============ -->
+                <Grid x:Name="TimerAlertView" Width="320" Height="64" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" Opacity="0">
+                    <Path Data="{StaticResource Icon.Timer}" Width="24" Height="24" Stretch="Uniform" Stroke="{StaticResource AccentBrush}" StrokeThickness="1.8"
+                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalAlignment="Left" Margin="20,0,0,0"/>
+                    <StackPanel VerticalAlignment="Center" Margin="58,0,100,0">
+                        <TextBlock Text="Timer finished" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="TimerAlertSub" FontSize="11.5" Foreground="{StaticResource MutedBrush}"/>
+                    </StackPanel>
+                    <Button x:Name="DismissButton" Style="{StaticResource AccentPillButton}" Content="Dismiss" Padding="12,5"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
