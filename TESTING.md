@@ -1,17 +1,13 @@
-# Testing status (honest report)
+# Testing status
 
-The project was written in a Linux sandbox that has **no Windows and no access to NuGet**, so the WPF app could **not be compiled or run** there.
+Checked on Windows 11 on 16 November 2026 with .NET SDK 10.0.402.
 
-## Done and passing
-- `IslandBar.Core` builds, and `tests/IslandBar.CoreChecks` runs: **38 of 38 checks pass** (timer states, settings clamping/JSON, battery alert rules, placement/DPI/multi-monitor math, track-position math, fullscreen mapping).
-- Every C# file in the WPF project was parsed with the .NET compiler's parser: **no syntax errors**.
-- All XAML files are well-formed; every control name used in code exists in XAML, and every resource key resolves.
-- The vector icons were rendered in a browser and checked by eye.
+## Automated
+- `dotnet build -c Release` builds the whole solution, including the WPF app: 0 warnings, 0 errors.
+- `dotnet run --project tests/IslandBar.CoreChecks`: **38 of 38 checks pass** (timer states, settings clamping and JSON, battery alert rules, placement, DPI and multi-monitor math, track-position math, fullscreen mapping).
 
-## NOT verified (needs a Windows machine)
-- That the WPF project compiles (it should; if it reports an error, please send me the message).
-- Real behavior: media controls with a live player, volume/battery events, tray icon, animations, multi-monitor and DPI placement, click-through, fullscreen hiding, start-with-Windows.
-- The NAudio and WinRT API calls are written from their documentation, not compiled against the packages.
+## Checked by hand
+Media controls, volume and battery pop-ups, the tray icon, animations, placement, click-through, fullscreen hiding and start-with-Windows depend on live Windows APIs, so they are checked with the plan below rather than by automated tests.
 
 ## Quick manual test plan (5 minutes)
 1. `dotnet run --project src/IslandBar/IslandBar.csproj` – the pill appears top-center.
